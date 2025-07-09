@@ -1,0 +1,181 @@
+{
+  "odors": [
+    {
+      "id": 1,
+      "name": "banana",
+      "key_molecules": [
+        "Isoamyl acetate"
+      ],
+      "qualitative_descriptors": [
+        "sweet",
+        "ripe-fruit",
+        "creamy"
+      ],
+      "hedonic_valence": "pleasant; high liking that diminishes with satiety",
+      "long_description": "Sweet, ripe-fruit, creamy; strongly pleasant food odour. Psychophysical work finds high liking that only drops under satiety."
+    },
+    {
+      "id": 2,
+      "name": "mandarin_orange",
+      "key_molecules": [
+        "d-Limonene",
+        "sweet-orange oil"
+      ],
+      "qualitative_descriptors": [
+        "fresh",
+        "juicy",
+        "citrus-sweet"
+      ],
+      "hedonic_valence": "pleasant across typical concentrations",
+      "long_description": "Fresh, juicy, citrus-sweet; “uplifting” and almost uniformly pleasant."
+    },
+    {
+      "id": 3,
+      "name": "pear",
+      "key_molecules": [
+        "Hexyl acetate",
+        "cis-3-hexen-1-yl acetate"
+      ],
+      "qualitative_descriptors": [
+        "green",
+        "watery-sweet",
+        "oily-fruity"
+      ],
+      "hedonic_valence": "gently pleasant",
+      "long_description": "Green, watery-sweet, oily-fruity; gentle pleasantness, often used to soften blends."
+    },
+    {
+      "id": 4,
+      "name": "apple",
+      "key_molecules": [
+        "2-Methylbutyl acetate",
+        "Hexyl acetate"
+      ],
+      "qualitative_descriptors": [
+        "crisp",
+        "green-sweet",
+        "waxy-fresh"
+      ],
+      "hedonic_valence": "reliably pleasant",
+      "long_description": "Crisp, green-sweet, slightly waxy; reliably pleasant and “fresh.”"
+    },
+    {
+      "id": 5,
+      "name": "mango",
+      "key_molecules": [
+        "Myrcene",
+        "δ-3-Carene",
+        "Lactones"
+      ],
+      "qualitative_descriptors": [
+        "tropical",
+        "resinous-sweet",
+        "green-minty"
+      ],
+      "hedonic_valence": "highly pleasant in panels",
+      "long_description": "Tropical, resinous-sweet with green minty nuance; rated highly pleasant in tropical-fruit panels."
+    },
+    {
+      "id": 6,
+      "name": "peach",
+      "key_molecules": [
+        "γ-Decalactone",
+        "δ-Lactones"
+      ],
+      "qualitative_descriptors": [
+        "creamy",
+        "buttery",
+        "ripe-peach"
+      ],
+      "hedonic_valence": "very pleasant; gourmand",
+      "long_description": "Creamy, ripe-peach, buttery; very pleasant, gourmand."
+    },
+    {
+      "id": 7,
+      "name": "strawberry",
+      "key_molecules": [
+        "Furaneol",
+        "Ethyl maltol"
+      ],
+      "qualitative_descriptors": [
+        "candy-like",
+        "caramel-jammy",
+        "fruity"
+      ],
+      "hedonic_valence": "strongly pleasant",
+      "long_description": "Intense candy-like, caramel-jammy; evokes strong positive hedonic responses."
+    },
+    {
+      "id": 8,
+      "name": "cloves",
+      "key_molecules": [
+        "Eugenol"
+      ],
+      "qualitative_descriptors": [
+        "warm",
+        "spicy-phenolic",
+        "medicinal"
+      ],
+      "hedonic_valence": "mildly pleasant at low dose; harsh if concentrated",
+      "long_description": "Warm, spicy, phenolic; mildly pleasant at low dose, but medicinal/clove-oil harshness can lower ratings when concentrated."
+    },
+    {
+      "id": 9,
+      "name": "coriander",
+      "key_molecules": [
+        "Linalool-rich essential oil"
+      ],
+      "qualitative_descriptors": [
+        "sweet-floral",
+        "citrus-herbal",
+        "soapy"
+      ],
+      "hedonic_valence": "generally fresh-pleasant; disliked by some",
+      "long_description": "Sweet-floral, citrus-herbal; generally perceived as fresh-pleasant, though dislike rises in people sensitive to “soapy” coriander."
+    },
+    {
+      "id": 10,
+      "name": "cumin",
+      "key_molecules": [
+        "Cuminaldehyde"
+      ],
+      "qualitative_descriptors": [
+        "intense",
+        "spicy-green",
+        "slightly animalic"
+      ],
+      "hedonic_valence": "pleasant in trace culinary doses; often unpleasant neat",
+      "long_description": "Intense, spicy-green, slightly animalic; pleasant in culinary traces but often rated unpleasant or pungent neat."
+    },
+    {
+      "id": 11,
+      "name": "garlic",
+      "key_molecules": [
+        "Allyl disulfide",
+        "Allyl methyl sulfide"
+      ],
+      "qualitative_descriptors": [
+        "pungent",
+        "alliaceous",
+        "metallic"
+      ],
+      "hedonic_valence": "typically unpleasant as pure vapour; appetitive in culinary context",
+      "long_description": "Pungent, alliaceous, metallic; typically hedonically negative as a pure vapour yet appetitive when linked to cooked-food context."
+    },
+    {
+      "id": 12,
+      "name": "almond",
+      "key_molecules": [
+        "Benzaldehyde"
+      ],
+      "qualitative_descriptors": [
+        "sharp",
+        "sweet-bitter",
+        "cherry-like"
+      ],
+      "hedonic_valence": "polarising—pleasant in desserts, sharp if concentrated",
+      "long_description": "Sharp, sweet-bitter almond/cherry; polarising—pleasant in desserts and perfumery, unpleasant if overly sharp."
+
+    }
+  ]
+}
