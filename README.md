@@ -1,5 +1,7 @@
 # reproducing-smell 👃🎈
 
+Goal: Cracking The Olfactory Code!
+
 1. Sensor read → raw vector S
 The dataset loads each gas-nose CSV and returns a tensor `sensor` of shape `[seq_len, features]`.
 
