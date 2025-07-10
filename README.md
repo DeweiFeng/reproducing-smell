@@ -22,7 +22,8 @@ So this code exactly implements:
 - Runtime = loop over data → select top β → `playSmell`
 
 With a properly trained `checkpoint.pt`, this runs end-to-end as drawn.
-🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩🧩
+
+---
 
 
 **Potential Failure Modes**
