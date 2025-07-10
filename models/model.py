@@ -1,77 +1,76 @@
+# models/model.py
 import torch
 import torch.nn as nn
 from transformers import AutoProcessor, AutoModel
 
-
 class LSTMNet(nn.Module):
-    def __init__(self, input_dim, hidden_dim, embedding_dim, num_classes):
+    def __init__(self, input_dim, hidden_dim, embedding_dim):
         super().__init__()
-        self.lstm = nn.LSTM(input_dim, hidden_dim, batch_first=True)
-        self.embedding_layer = nn.Linear(hidden_dim, embedding_dim)
-        self.classifier = nn.Linear(embedding_dim, num_classes)
+        self.lstm = nn.LSTM(input_dim, hidden_dim, batch_first=True)  # Sequence model
+        self.embedding_layer = nn.Linear(hidden_dim, embedding_dim)  # Projection layer
 
     def forward(self, x):
-        lstm_out, _ = self.lstm(x)  # lstm_out: (batch, seq, hidden)
-        pooled = torch.mean(lstm_out, dim=1)  # average over time
-        embedding = self.embedding_layer(pooled)
-        out = self.classifier(embedding)
-        return out, embedding
+        lstm_out, _ = self.lstm(x)  # [B, L, hidden_dim]
+        pooled = lstm_out.mean(dim=1)  # [B, hidden_dim]
+        embedding = self.embedding_layer(pooled)  # [B, embedding_dim]
+        return embedding  # Return sensor embedding
 
-
-class SmellReconstructionModel(nn.Module):
+class MultimodalOdorNet(nn.Module):
     def __init__(
         self,
-        qwen_model_name="Qwen/Qwen-VL-Chat-Int4",
-        smellnet_model=None,
-        fusion_dim=768,
-        num_perfumes=12
+        qwen_model_name: str = "Qwen/Qwen-VL-Chat-Int4",
+        sensor_feat_dim: int = 8,
+        sensor_hidden_dim: int = 128,
+        sensor_emb_dim: int = 768,
+        fusion_dim: int = 768,
+        num_perfumes: int = 12
     ):
         super().__init__()
+        # Load Qwen processor and model for image+text
         self.qwen_processor = AutoProcessor.from_pretrained(qwen_model_name)
         self.qwen_model = AutoModel.from_pretrained(qwen_model_name)
 
-        self.smellnet_model = smellnet_model  # Your pretrained encoder for sensor input
-        self.smell_proj = nn.Linear(smellnet_model.output_dim, fusion_dim)
+        # Sensor sequence encoder
+        self.smell_enc = LSTMNet(sensor_feat_dim, sensor_hidden_dim, sensor_emb_dim)
+        self.smell_proj = nn.Linear(sensor_emb_dim, fusion_dim)  # Project sensor embedding
 
-        self.vision_proj = nn.Linear(self.qwen_model.config.vision_hidden_size, fusion_dim)
-        self.text_proj = nn.Linear(self.qwen_model.config.hidden_size, fusion_dim)
+        # Projection layers for vision and text features
+        v_dim = self.qwen_model.config.vision_hidden_size
+        t_dim = self.qwen_model.config.hidden_size
+        self.vision_proj = nn.Linear(v_dim, fusion_dim)
+        self.text_proj = nn.Linear(t_dim, fusion_dim)
 
-        self.fusion = nn.TransformerEncoder(
-            nn.TransformerEncoderLayer(d_model=fusion_dim, nhead=4),
-            num_layers=2
-        )
+        # Transformer-based fusion module
+        layer = nn.TransformerEncoderLayer(d_model=fusion_dim, nhead=4)
+        self.fusion = nn.TransformerEncoder(layer, num_layers=2)
 
-        # Predict proportions over 12 base perfumes (normalized)
+        # Output head for mixture ratio prediction
         self.output_head = nn.Sequential(
             nn.Linear(fusion_dim, fusion_dim),
             nn.ReLU(),
             nn.Linear(fusion_dim, num_perfumes),
-            nn.Softmax(dim=-1)  # mixture ratios
+            nn.Softmax(dim=-1)
         )
 
     def forward(self, image, text, smell_input):
-        """
-        Args:
-            image (PIL.Image or tensor): Image of the food
-            text (str): Text description
-            smell_input (tensor): Sensor vector or sequence
+        # Prepare image+text for Qwen
+        inputs = self.qwen_processor(text=text, images=image, return_tensors="pt", padding=True)
+        # Move inputs to the same device as smell_input
+        inputs = {k: v.to(smell_input.device) for k, v in inputs.items()}
+        qwen_out = self.qwen_model(**inputs, output_hidden_states=True)
 
-        Returns:
-            torch.Tensor: [B, 12] mixture ratio over perfume bases
-        """
-        inputs = self.qwen_processor(text=text, images=image, return_tensors="pt", padding=True).to(image.device)
-        qwen_outputs = self.qwen_model(**inputs, output_hidden_states=True)
+        vision_feat = qwen_out.vision_hidden_state.mean(dim=1)  # Visual embedding
+        text_feat   = qwen_out.last_hidden_state.mean(dim=1)    # Textual embedding
+        smell_emb   = self.smell_enc(smell_input)              # Sensor embedding
 
-        vision_feat = qwen_outputs.vision_hidden_state.mean(dim=1)  # [B, V_dim]
-        text_feat = qwen_outputs.last_hidden_state.mean(dim=1)      # [B, T_dim]
-        smell_feat = self.smellnet_model(smell_input)               # [B, S_dim]
+        # Project each modality into fusion space
+        v_proj = self.vision_proj(vision_feat)
+        t_proj = self.text_proj(text_feat)
+        s_proj = self.smell_proj(smell_emb)
 
-        vision_proj = self.vision_proj(vision_feat)
-        text_proj = self.text_proj(text_feat)
-        smell_proj = self.smell_proj(smell_feat)
+        # Stack and fuse via transformer
+        fused = torch.stack([v_proj, t_proj, s_proj], dim=1)  # [B,3,fusion_dim]
+        fused_encoded = self.fusion(fused)                     # [B,3,fusion_dim]
+        fused_summary = fused_encoded.mean(dim=1)              # [B,fusion_dim]
 
-        fused = torch.stack([vision_proj, text_proj, smell_proj], dim=1)  # [B, 3, fusion_dim]
-        fused_encoded = self.fusion(fused)                                # [B, 3, fusion_dim]
-        fused_summary = fused_encoded.mean(dim=1)                         # [B, fusion_dim]
-
-        return self.output_head(fused_summary)                            # [B, 12]
+        return self.output_head(fused_summary)  # Predict mixture ratios
